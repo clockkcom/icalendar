@@ -307,50 +307,55 @@ defmodule ICalendar.Util.Deserialize do
     rrule
     |> String.split(";")
     |> Enum.reduce(%{}, fn rule, hash ->
-      [key, value] = rule |> String.split("=")
+      case rule |> String.split("=") do
+        [key, value] ->
+          case key |> String.downcase() |> String.to_atom() do
+            :freq ->
+              hash |> Map.put(:freq, value)
 
-      case key |> String.downcase() |> String.to_atom() do
-        :freq ->
-          hash |> Map.put(:freq, value)
+            :until ->
+              hash |> Map.put(:until, ICalendar.Util.DateParser.parse(value))
 
-        :until ->
-          hash |> Map.put(:until, ICalendar.Util.DateParser.parse(value))
+            :count ->
+              hash |> Map.put(:count, String.to_integer(value))
 
-        :count ->
-          hash |> Map.put(:count, String.to_integer(value))
+            :interval ->
+              hash |> Map.put(:interval, String.to_integer(value))
 
-        :interval ->
-          hash |> Map.put(:interval, String.to_integer(value))
+            :bysecond ->
+              hash |> Map.put(:bysecond, String.split(value, ","))
 
-        :bysecond ->
-          hash |> Map.put(:bysecond, String.split(value, ","))
+            :byminute ->
+              hash |> Map.put(:byminute, String.split(value, ","))
 
-        :byminute ->
-          hash |> Map.put(:byminute, String.split(value, ","))
+            :byhour ->
+              hash |> Map.put(:byhour, String.split(value, ","))
 
-        :byhour ->
-          hash |> Map.put(:byhour, String.split(value, ","))
+            :byday ->
+              hash |> Map.put(:byday, String.split(value, ","))
 
-        :byday ->
-          hash |> Map.put(:byday, String.split(value, ","))
+            :bymonthday ->
+              hash |> Map.put(:bymonthday, String.split(value, ","))
 
-        :bymonthday ->
-          hash |> Map.put(:bymonthday, String.split(value, ","))
+            :byyearday ->
+              hash |> Map.put(:byyearday, String.split(value, ","))
 
-        :byyearday ->
-          hash |> Map.put(:byyearday, String.split(value, ","))
+            :byweekno ->
+              hash |> Map.put(:byweekno, String.split(value, ","))
 
-        :byweekno ->
-          hash |> Map.put(:byweekno, String.split(value, ","))
+            :bymonth ->
+              hash |> Map.put(:bymonth, String.split(value, ","))
 
-        :bymonth ->
-          hash |> Map.put(:bymonth, String.split(value, ","))
+            :bysetpos ->
+              hash
+              |> Map.put(:bysetpos, Enum.map(String.split(value, ","), &String.to_integer(&1)))
 
-        :bysetpos ->
-          hash |> Map.put(:bysetpos, Enum.map(String.split(value, ","), &String.to_integer(&1)))
+            :wkst ->
+              hash |> Map.put(:wkst, value)
 
-        :wkst ->
-          hash |> Map.put(:wkst, value)
+            _ ->
+              hash
+          end
 
         _ ->
           hash
