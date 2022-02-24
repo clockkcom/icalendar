@@ -25,8 +25,16 @@ defimpl ICalendar.Deserialize, for: BitString do
 
       "END:VEVENT" ->
         # finish collecting event
-        event = Deserialize.build_event(temp_collector ++ [head])
-        get_events(calendar_data, [event] ++ event_collector, [])
+        event =
+          case event_is_after_epoch(temp_collector) do
+            false ->
+              []
+
+            true ->
+              [Deserialize.build_event(temp_collector ++ [head])]
+          end
+
+        get_events(calendar_data, event ++ event_collector, [])
 
       event_property when temp_collector != [] ->
         get_events(calendar_data, event_collector, temp_collector ++ [event_property])
@@ -34,6 +42,33 @@ defimpl ICalendar.Deserialize, for: BitString do
       _unimportant_stuff ->
         get_events(calendar_data, event_collector, temp_collector)
     end
+  end
+
+  defp event_is_after_epoch(event) do
+    date_is_valid(event, "DTSTART") and date_is_valid(event, "DTEND")
+  end
+
+  defp date_is_valid(event, dateproperty) do
+    valid =
+      case Enum.find(event, fn property ->
+             String.contains?(property, dateproperty)
+           end) do
+        nil ->
+          # this is an invalid event, ignore
+          false
+
+        string ->
+          # we found a date, see if it's too old
+          case Regex.match?(~r/19[0-6]\d{4}/, string) do
+            true ->
+              # date is before 1970, ignore
+              false
+
+            false ->
+              # date is after 1970, ignore
+              true
+          end
+      end
   end
 
   defp get_events([], event_collector, _temp_collector), do: event_collector
