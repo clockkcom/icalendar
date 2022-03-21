@@ -5,11 +5,14 @@
 [![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/icalendar/)
 [![Total Download](https://img.shields.io/hexpm/dt/icalendar.svg)](https://hex.pm/packages/icalendar)
 [![License](https://img.shields.io/hexpm/l/icalendar.svg)](https://github.com/lpil/icalendar/blob/master/LICENSE.md)
-[![Last Updated](https://img.shields.io/github/last-commit/lpil/icalendar.svg)](https://github.com/lpil/icalendar/commits/master)
 
 A small library for reading and writing ICalendar files.
 
-**This library is in maintenance mode**. Bug fixes will be accepted but no new features will be added. If you wish to add new features I recommend creating and publishing a fork. If an active fork is created I will direct users from this project to the new one.
+# This library is in maintenance mode
+
+Bug fixes may be accepted but no new features will be added. If you wish to add
+new features I recommend creating and publishing a fork. If an active fork is
+created I will direct users from this project to the new one.
 
 ## Installation
 
