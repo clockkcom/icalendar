@@ -10,6 +10,8 @@ defimpl ICalendar.Deserialize, for: BitString do
   def from_ics(ics) do
     ics
     |> String.trim()
+    # VALARMs are overwriting the event's actual description and summary, simply ignore anything between these two markers
+    |> String.replace(~r/BEGIN\:VALARM[\s\S]*?END:VALARM/, "")
     |> String.split("\n")
     |> Enum.map(&String.trim_trailing/1)
     |> get_events()
