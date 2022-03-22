@@ -247,8 +247,16 @@ defmodule ICalendar.Util.Deserialize do
 
     date_string =
       case String.last(date_string) do
-        "Z" -> date_string
-        _ -> date_string <> "Z"
+        "Z" ->
+          date_string
+
+        _ ->
+          date_string =
+            date_string
+            # Microsoft Outlook calendars can have multiple date values in the same field. We only want the first one.
+            |> String.replace(~r/(,.*)/, "")
+
+          date_string <> "Z"
       end
 
     Timex.parse(date_string <> timezone, "{YYYY}{0M}{0D}T{h24}{m}{s}Z{Zname}")
