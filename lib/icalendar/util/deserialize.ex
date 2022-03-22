@@ -242,6 +242,8 @@ defmodule ICalendar.Util.Deserialize do
       else
         Timex.Timezone.Utils.to_olson(timezone)
       end
+      # sometimes the timezone has a trailing +7 after Etc/GMT. We don't want that.
+      |> String.replace(~r/(\+.*)/, "")
 
     date_string =
       case String.last(date_string) do
