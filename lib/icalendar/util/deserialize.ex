@@ -240,10 +240,20 @@ defmodule ICalendar.Util.Deserialize do
       if Regex.match?(~r/\//, timezone) do
         timezone
       else
-        timezone
-        # sometimes OWA calendar timezones have are "Central Standard Time 1". The "1" at the end is an invalid timezone, so remove it.
-        |> String.replace(~r/\ \d/, "")
-        |> Timex.Timezone.Utils.to_olson()
+        timezone =
+          timezone
+          # sometimes OWA calendar timezones have are "Central Standard Time 1". The "1" at the end is an invalid timezone, so remove it.
+          |> String.replace(~r/\ \d/, "")
+
+        case Timex.Timezone.Utils.to_olson(timezone) do
+          nil ->
+            # Some calendars have Customized Time Zones set in their TZID definition list
+            # Too complicated to lookup from this function, so defaul to "Etc/UTC"
+            "Etc/UTC"
+
+          olson ->
+            olson
+        end
       end
       # sometimes the timezone has a trailing +7 after Etc/GMT. We don't want that.
       |> String.replace(~r/(\+.*)/, "")
